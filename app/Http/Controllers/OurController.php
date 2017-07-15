@@ -11,6 +11,9 @@ use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Mockery\CountValidator\Exception;
+use mPDF;
+use Illuminate\Support\Facades\File;
+use Illuminate\Contracts\Foundation\Application;
 
 class OurController extends Controller
 {
@@ -79,6 +82,7 @@ class OurController extends Controller
         foreach ($jobs as $job) {
             $exp = $job->experience()->get();
             $asoc = $job->toArray();
+            $asoc['company']= $job->company()->get();
             if (sizeof($exp) != 0) {
                 $asoc['experience'] = $exp;
             } else {
@@ -119,15 +123,57 @@ class OurController extends Controller
 
     public function getJobsForTag(Request $request)
     {
-       $tagId = $request->tag_id;
-        $tagAds = TagAd::where('tag_id','=',$tagId)->get();
+       $tagIds = $request->tag_ids;
+        $arr = explode(";", $tagIds);
         $res = array();
-        foreach ($tagAds as $tagAd) {
+        foreach ($arr as $tagId) {
+            $tagAds = TagAd::where('tag_id', '=', $tagId)->get();
+            foreach ($tagAds as $tagAd) {
                 $ad = $tagAd->ad()->first();
-            array_push($res,$ad);
+                if(!in_array($ad, $res)) {
+                    array_push($res, $ad);
+                }
+            }
         }
+
         return response()->json(['jobs' => $res]);
+    }
+
+    public function generatePdf()
+    {
+        $htmlString =  file_get_contents(storage_path("testHtml.html"),'r');
+        $htmlString = str_replace("%TEXT%", 'RADIII', $htmlString);
+        $mpdf = new Mpdf();
+        $mpdf->WriteHTML($htmlString);
+        $mpdf->Output('test.pdf', 'F');
+
+        return response()->json(['jobs' => "jea"]);
+    }
+
+    public function getCompanyById($id)
+    {;
+        $com = Company::find($id);
+        return response()->json(['company' => $com->toArray()]);
 
     }
+
+    public function getBestUsersForAd($id)
+    {
+        $match = 0;
+        $users = User::all();
+        $ad = Ad::find($id);
+        $companyExp = $ad->experience()->get();
+        foreach ($users as $user) {
+            $userExp = $user->experrience()->get();
+            $matchesExp = 0;
+            foreach ($userExp as $uExp) {
+                foreach ($companyExp as $cExp) {
+//                    if(strpos($uExp->))
+                }
+            }
+        }
+    }
+
+
 
 }
