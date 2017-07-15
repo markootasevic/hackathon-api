@@ -17,4 +17,12 @@ class Ad extends Model
     {
         return $this->belongsTo('App\Company', 'company_id', 'company_id');
     }
+    public function experience()
+    {
+        return $this->hasMany('App\ExperienceCompany','ad_id','ad_id');
+    }
+    public function requirements()
+    {
+        return $this->hasMany('App\Requirements','ad_id','ad_id');
+    }
 }

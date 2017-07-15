@@ -17,4 +17,6 @@ class Company extends Model
     {
         return $this->hasMany('App\Ad','company_id','company_id');
     }
+
+
 }

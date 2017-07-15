@@ -16,6 +16,6 @@ class ExperienceCompany extends Model
 
     public function company()
     {
-        return $this->belongsTo('App\Company', 'company_id', 'company_id');
+        return $this->belongsTo('App\Ad', 'ad_id', 'ad_id');
     }
 }
