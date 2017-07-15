@@ -24,4 +24,8 @@ $app->post('/loginUser','OurController@logIn');
 $app->post('/loginCompany','OurController@logInCom');
 $app->get('/jobs/all','OurController@getAllJobs');
 $app->post('/jobs/filter','OurController@getJobsFilter');
+$app->post('/tag/filter','OurController@getTagsByName');
+$app->post('/jobs/tag','OurController@getJobsForTag');
+
+
 

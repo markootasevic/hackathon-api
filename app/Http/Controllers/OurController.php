@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Ad;
 use App\Company;
 use App\Jobs\Job;
+use App\Tag;
+use App\TagAd;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -105,6 +107,27 @@ class OurController extends Controller
         }
         $res = $query->get();
         return response()->json(['jobs' => $res]);
+    }
+
+    public function getTagsByName(Request $request)
+    {
+        $name = $request->name;
+        $tags = Tag::where('name','LIKE','%'.$name.'%')->get();
+        return response()->json(['tags' => $tags->toArray()]);
+
+    }
+
+    public function getJobsForTag(Request $request)
+    {
+       $tagId = $request->tag_id;
+        $tagAds = TagAd::where('tag_id','=',$tagId)->get();
+        $res = array();
+        foreach ($tagAds as $tagAd) {
+                $ad = $tagAd->ad()->first();
+            array_push($res,$ad);
+        }
+        return response()->json(['jobs' => $res]);
+
     }
 
 }
