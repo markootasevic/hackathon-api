@@ -319,6 +319,13 @@ class OurController extends Controller
 //endregion
         }
         $arr = $users->toArray();
+        if(sizeof($arr) > 3) {
+            $shortArr = array();
+            for ($i = 0; $i < 3;$i++) {
+                array_push($shortArr, $arr[$i]);
+            }
+            $arr = $shortArr;
+        }
         usort($arr, array("App\\Http\\Controllers\\OurController", "cmpCompare"));
         return response()->json(['users' => $arr]);
 
