@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 16, 2017 at 07:11 AM
+-- Generation Time: Jul 16, 2017 at 07:35 AM
 -- Server version: 5.7.14
 -- PHP Version: 5.6.25
 
@@ -161,6 +161,15 @@ CREATE TABLE `picture` (
   `company_id` int(11) NOT NULL,
   `url` varchar(200) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `picture`
+--
+
+INSERT INTO `picture` (`picture_id`, `company_id`, `url`) VALUES
+(1, 1, 'localhost:8000/img/images.jpg'),
+(2, 1, 'http://localhost:8000/img/Keep-your-employees-safe-healthy-and-happy-through-these-four-HR-suggestions_386_6053672_0_14109651_1000.jpg'),
+(3, 1, 'localhost:8000/img/costco-workers-604cs040813-800x440-c-default.jpg');
 
 -- --------------------------------------------------------
 
@@ -429,7 +438,7 @@ ALTER TABLE `experience_user`
 -- AUTO_INCREMENT for table `picture`
 --
 ALTER TABLE `picture`
-  MODIFY `picture_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `picture_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `requirements`
 --

@@ -1,0 +1,109 @@
+
+
+  <style>
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-color: #FAFAFA;
+      font: 12pt "Tahoma";
+    }
+
+    /** {*/
+      /*box-sizing: border-box;*/
+       /*-moz-box-sizing: border-box;*/
+    /*}*/
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 20mm;
+      margin: 10mm auto;
+      border: 1px #D3D3D3 solid;
+      border-radius: 5px;
+      background: white;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .divider {
+      border-bottom: 1px black dashed;
+      margin-top: 80px;
+      width: 100%;
+    }
+
+    .div-bottom {
+      position: absolute;
+      bottom: 50%;
+    }
+
+    .number-1 {
+      width: 33%;
+      float: left;
+      transform: rotate(90deg);
+    }
+
+
+
+
+    /*@page {*/
+      /*size: A4;*/
+      /*margin: 0;*/
+    /*}*/
+
+    /*@media print {*/
+      /*html,*/
+      /*body {*/
+        /*width: 210mm;*/
+        /*height: 297mm;*/
+      /*}*/
+      .page {
+        margin: 0;
+        border: initial;
+        border-radius: initial;
+        width: initial;
+        min-height: initial;
+        box-shadow: initial;
+        background: initial;
+        page-break-after: always;
+      }
+    /*}*/
+  </style>
+  <div class="book">
+    <div class="page">
+      <div class="subpage"><em>Oglas kreiran uz pomoc serivsa poslici</em></div>
+      <img style="float: right; margin-top: -80px" src=" %QRCODE% " alt="">
+      <br>
+      <p>
+        <b>Naslov :</b> %NASLOV%
+      </p>
+
+      <p>
+        <b>Adresa :</b> %ADRESA%
+      </p>
+
+      <p>
+        <b>Tel :</b> %TELEFON%
+      </p>
+
+      <p>
+        <b>Opis :</b> %OPIS%</p>
+
+      <p><b>Zahvevi</b></p>
+
+      %ZAHTEVI%
+
+      <br>
+      <br>
+      <div class="div-bottom">
+        <table rotate="90">
+          %TELEFONI%
+
+        </table>
+
+      </div>
+    </div>
+  </div>
+
+

@@ -545,4 +545,13 @@ class OurController extends Controller
         $job->requirements = $job->requirements()->get();
         return response()->json(['job' => $job->toArray()]);
     }
+
+    public function postCompany(Request $request)
+    {
+        $com = new Company();
+        $com->name = $request->name;
+        $com->address = $request->address;
+        $logo = $request->file('logo');
+        $fileName=substr($file->getClientOriginalName(),0,strrpos($file->getClientOriginalName(),"."))."-".$id.".".$file->getClientOriginalExtension();
+    }
 }
