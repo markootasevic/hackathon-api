@@ -91,6 +91,12 @@ class OurController extends Controller
             $job->requirements = $job->requirements()->get();
             $job->company = $job->company()->get();
             $job->tags = $job->tags()->get();
+            $arr = array();
+            foreach ($job->tags as $tag) {
+                $t = Tag::find($tag->tag_id);
+                array_push($arr,$t);
+            }
+            $job->tags = $arr;
 //            $exp = $job->experience()->get();
 //            $asoc = $job;
 //            $asoc->company= $job->company()->get();
@@ -244,8 +250,11 @@ class OurController extends Controller
                         }
                     }
                 }
-
-                $user->pctmatchExp = ($matchesExp / sizeof($companyExp)) * 100;
+                if(sizeof($companyExp) != 0) {
+                    $user->pctmatchExp = ($matchesExp / sizeof($companyExp)) * 100;
+                } else {
+                    $user->pctmatchExp = 0;
+                }
             }
 //endregion
 //region start of tagNum matches
@@ -259,7 +268,11 @@ class OurController extends Controller
                     }
                 }
             }
-            $user->pctOfSameTags = ($numOfSameTags / sizeof($adTags)) * 100;
+            if( sizeof($adTags) != 0) {
+                $user->pctOfSameTags = ($numOfSameTags / sizeof($adTags)) * 100;
+            } else {
+                $user->pctOfSameTags = 0;
+            }
 //endregion
 //region start of education matches
 
@@ -284,7 +297,11 @@ class OurController extends Controller
                     }
                 }
             }
-            $user->pctOfEduMatches = ($numOfEduMatches / sizeof($adReq)) * 100;
+            if( sizeof($adReq) != 0) {
+                $user->pctOfEduMatches = ($numOfEduMatches / sizeof($adReq)) * 100;
+            } else {
+                $user->pctOfEduMatches = 0;
+            }
 //endregion
 
 //region start of user skill matches
@@ -310,7 +327,11 @@ class OurController extends Controller
                     }
                 }
             }
-            $user->pctOfSkilsMatched = ($numOfSkilsMatched / sizeof($adReq)) * 100;
+            if( sizeof($adReq) != 0) {
+                $user->pctOfSkilsMatched = ($numOfSkilsMatched / sizeof($adReq)) * 100;
+            } else {
+                $user->pctOfSkilsMatched = 0;
+            }
 //endregion
 //region start of final calculations
 
@@ -346,24 +367,13 @@ class OurController extends Controller
     public function postAd(Request $request)
     {
         $ad = new Ad();
-        $ad->company_id = $request->company_id;
-        $ad->data_from = $request->data_from;
-        $ad->date_to = $request->date_to;
+        $ad->company_id = $request->companyID;
         $ad->sex = $request->sex;
         $ad->age = $request->age;
         $ad->pay = $request->pay;
-        $ad->title = $request->title;
-        $ad->duration = $request->duration;
         $ad->what_we_offer = $request->what_we_offer;
 
         $ad->save();
-        foreach ($request->experience as $exp) {
-            $ex = new ExperienceCompany();
-            $ex->years = $exp->years;
-            $ex->position = $exp->position;
-            $ex->ad_id = $ad->ad_id;
-            $ex->save();
-        }
         $exps = explode(';',$request->requirements);
         foreach ($exps as $req) {
             $r = new Requirements();
@@ -373,10 +383,12 @@ class OurController extends Controller
         }
         $tagStr = $request->tag;
         $tag = Tag::where('name','=',$tagStr)->first();
-        $tagCom = new TagCompany();
-        $tagCom->tag_id = $tag->tag_id;
-        $tagCom->company_id = $ad->company_id;
-        $tagCom->save();
+        if($tag){
+            $tagCom = new TagCompany();
+            $tagCom->tag_id = $tag->tag_id;
+            $tagCom->company_id = $ad->company_id;
+            $tagCom->save();
+        }
         return response()->json(['success' => true]);
     }
 
