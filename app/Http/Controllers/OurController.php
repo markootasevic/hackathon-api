@@ -157,6 +157,7 @@ class OurController extends Controller
         $htmlString = str_replace("%ADRESA%", $company->address, $htmlString);
         $htmlString = str_replace("%NASLOV%", $ad->title, $htmlString);
         $htmlString = str_replace("%TELEFON%", $company->contact, $htmlString);
+        $htmlString = str_replace("%KOMPANIJA%", $company->name, $htmlString);
         $reqs = $ad->requirements()->get();
         $zahtevi = "";
         foreach ($reqs as $req) {
