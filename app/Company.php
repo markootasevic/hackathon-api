@@ -17,6 +17,10 @@ class Company extends Model
     {
         return $this->hasMany('App\Ad','company_id','company_id');
     }
+    public function pictures()
+    {
+        return $this->hasMany('App\Picture','company_id','company_id');
+    }
 
 
 }

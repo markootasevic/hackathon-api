@@ -33,6 +33,10 @@ $app->post('/job/new','OurController@postAd');
 $app->get('/pdf/{id}','OurController@generatePdf');
 $app->post('/sendJobOffer','OurController@sendMail');
 $app->get('/user/getBestOffer/{id}','OurController@getBestAdsForUser');
+$app->get('/company/images/{id}','OurController@getImagesForCompany');
+$app->get('/job/{id}','OurController@getJobById');
+
+
 
 
 

@@ -89,6 +89,7 @@ class OurController extends Controller
             $job->experience = $job->experience()->get();
             $job->requirements = $job->requirements()->get();
             $job->company = $job->company()->get();
+            $job->tags = $job->tags()->get();
 //            $exp = $job->experience()->get();
 //            $asoc = $job;
 //            $asoc->company= $job->company()->get();
@@ -526,5 +527,22 @@ class OurController extends Controller
         $arr = $ads->toArray();
         usort($arr, array("App\\Http\\Controllers\\OurController", "cmpCompare"));
         return response()->json(['jobs' => $arr]);
+    }
+
+    public function getImagesForCompany($id)
+    {
+        $com = Company::find($id);
+        $images = $com->pictures()->get();
+        return response()->json(['images' => $images->toArray()]);
+    }
+
+    public function getJobById($id)
+    {
+        $job = Ad::find($id);
+        $job->company = $job->company()->get();
+        $job->tags = $job->tags()->get();
+        $job->experience = $job->experience()->get();
+        $job->requirements = $job->requirements()->get();
+        return response()->json(['job' => $job->toArray()]);
     }
 }
