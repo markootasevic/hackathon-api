@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 16, 2017 at 07:35 AM
+-- Generation Time: Jul 16, 2017 at 09:57 AM
 -- Server version: 5.7.14
 -- PHP Version: 5.6.25
 
@@ -44,8 +44,8 @@ CREATE TABLE `ad` (
 --
 
 INSERT INTO `ad` (`ad_id`, `company_id`, `date_from`, `date_to`, `sex`, `age`, `pay`, `title`, `duration`, `what_we_offer`) VALUES
-(1, 1, '2017-07-03', NULL, 1, 15, NULL, 'Neki opis poslaaa', NULL, 'nudimo svasta nesto lepo'),
-(2, 1, '2017-07-01', '2017-07-04', 0, NULL, NULL, NULL, NULL, NULL);
+(1, 1, '2017-07-03', NULL, 1, 15, NULL, 'Trazi se pekar za pravljenje, pomaganje na kasi i usluzivanje gostiju', NULL, 'Nudimo veselu atmosferu i konkurentsku platu'),
+(2, 2, '2017-07-01', '2017-07-04', 0, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -69,7 +69,7 @@ CREATE TABLE `company` (
 --
 
 INSERT INTO `company` (`company_id`, `email`, `password`, `name`, `address`, `logo_url`, `description`, `contact`) VALUES
-(1, 'com@radi.com', 'jeej', 'Belit', 'Trg Nikole Pasica 9', NULL, 'Druga najbolja IT firma na trgu nikole pasica', '064 548-58-96');
+(1, 'com@radi.com', 'jeej', 'Pekara miki i sinovci', 'Trg Nikole Pasica 9', NULL, 'Najbolje peciva u samom centru grada', '064 548-58-96');
 
 -- --------------------------------------------------------
 
@@ -102,7 +102,7 @@ CREATE TABLE `education` (
 --
 
 INSERT INTO `education` (`education_id`, `user_id`, `school`, `education_level`) VALUES
-(1, 1, 'Fon', 'mnogo zajeban'),
+(1, 1, '4. bgd gimnazija', 'naucimo mnogo stvari koje sam posle mogao da primenim u zivotu'),
 (2, 1, 'ETF', 'neki zahtev znaci haos');
 
 -- --------------------------------------------------------
@@ -123,7 +123,7 @@ CREATE TABLE `experience_company` (
 --
 
 INSERT INTO `experience_company` (`experience_company_id`, `ad_id`, `years`, `position`) VALUES
-(2, 1, 2, 'Hr covek'),
+(2, 1, 2, 'Pekar'),
 (3, 2, 1, 'Zna sve covek');
 
 -- --------------------------------------------------------
@@ -147,7 +147,7 @@ CREATE TABLE `experience_user` (
 --
 
 INSERT INTO `experience_user` (`experience_user_id`, `user_id`, `position`, `company`, `date_from`, `date_to`, `description`) VALUES
-(1, 1, 'HR manager', 'Dulo', '2016-07-04', NULL, 'Ovo je opis pozicije'),
+(1, 1, 'pekar , kasir', 'Dulo peciva', '2012-07-04', NULL, 'Radio u pekari 5 godina na raznim pozicijama'),
 (2, 1, 'PR covek', 'Pr comp', '2017-07-10', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -188,7 +188,7 @@ CREATE TABLE `requirements` (
 --
 
 INSERT INTO `requirements` (`requirements_id`, `ad_id`, `text`) VALUES
-(2, 1, 'neki zahtev mnogo zajeban');
+(2, 1, 'bar 1 godina iskustva rada u pekari');
 
 -- --------------------------------------------------------
 
@@ -208,8 +208,8 @@ CREATE TABLE `skill` (
 --
 
 INSERT INTO `skill` (`skill_id`, `user_id`, `skill_name`, `skill_level`) VALUES
-(1, 1, 'neki zahtev mnogo ', 'idemoooo'),
-(2, 1, 'to je to mnogo neki', 'ma da da');
+(1, 1, '5  godina iskustva rada u pekari na raznim pozicijama', NULL),
+(2, 1, '5 godina kao pomocnik i radnik na kasi u jednoj pekari na banjici', 'ma da da');
 
 -- --------------------------------------------------------
 
@@ -280,7 +280,7 @@ CREATE TABLE `tag_user` (
 
 INSERT INTO `tag_user` (`tag_id`, `user_id`) VALUES
 (1, 1),
-(2, 1);
+(3, 1);
 
 -- --------------------------------------------------------
 
@@ -293,9 +293,9 @@ CREATE TABLE `user` (
   `email` varchar(200) DEFAULT NULL,
   `password` varchar(100) DEFAULT NULL,
   `name` varchar(200) NOT NULL,
-  `address` int(11) DEFAULT NULL,
+  `address` varchar(200) DEFAULT NULL,
   `can_company_contact` tinyint(1) NOT NULL DEFAULT '0',
-  `about_me` int(11) DEFAULT NULL
+  `about_me` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -303,7 +303,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`user_id`, `email`, `password`, `name`, `address`, `can_company_contact`, `about_me`) VALUES
-(1, 'radi@radi.com', '1234', '', NULL, 0, NULL),
+(1, 'dulerad94@gmail.com', '1234', 'Dusan Radovanovic', 'Banjica, Beograd', 1, NULL),
 (2, 'dule', 'dule', '', NULL, 0, NULL),
 (3, 'dukili', 'jeej', '', NULL, 0, NULL),
 (4, 'dule', 'dule', '', NULL, 0, NULL),
