@@ -18,16 +18,21 @@ class User extends Model
     {
         return $this->hasMany('App\Skill','user_id','user_id');
     }
-    public function educations()
+    public function education()
     {
         return $this->hasMany('App\Education','user_id','user_id');
     }
     public function experrience()
     {
-        return $this->hasMany('App\Experience','user_id','user_id');
+        return $this->hasMany('App\ExperienceUser','user_id','user_id');
     }
     public function criteria()
     {
         return $this->hasMany('App\Criteria','user_id','user_id');
+    }
+
+    public function tags()
+    {
+        return $this->hasMany('App\TagUser','user_id','user_id');
     }
 }

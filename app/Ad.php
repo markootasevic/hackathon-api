@@ -25,4 +25,9 @@ class Ad extends Model
     {
         return $this->hasMany('App\Requirements','ad_id','ad_id');
     }
+    public function tags()
+    {
+        return $this->hasMany('App\TagAd','ad_id','ad_id');
+    }
+
 }

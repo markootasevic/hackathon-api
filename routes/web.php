@@ -26,8 +26,11 @@ $app->get('/jobs/all','OurController@getAllJobs');
 $app->post('/jobs/filter','OurController@getJobsFilter');
 $app->post('/tag/filter','OurController@getTagsByName');
 $app->post('/jobs/tag','OurController@getJobsForTag');
-$app->get('/test','OurController@generatePdf');
 $app->get('/company/{id}','OurController@getCompanyById');
+$app->get('/job/bestUsers/{id}','OurController@getBestUsersForAd');
+$app->get('/job/basicInfo/{id}','OurController@getHomePageBasicInfo');
+$app->psot('/job/new','OurController@postAd');
+
 
 
 
