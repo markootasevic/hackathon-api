@@ -17,6 +17,7 @@ use mPDF;
 use Illuminate\Support\Facades\File;
 use Illuminate\Contracts\Foundation\Application;
 use DateTime;
+use PHPMailer;
 
 class OurController extends Controller
 {
@@ -29,7 +30,7 @@ class OurController extends Controller
         $user = new User();
         $user->email = $email;
         $user->password = $pass;
-        if($user->save() === false){
+        if ($user->save() === false) {
             return response()->json(['success' => false]);
         }
         return response()->json(['success' => true]);
@@ -45,12 +46,13 @@ class OurController extends Controller
         $user = new Company();
         $user->email = $email;
         $user->password = $pass;
-        if($user->save() === false){
+        if ($user->save() === false) {
             return response()->json(['success' => false]);
         }
         return response()->json(['success' => true]);
 
     }
+
     public function logInCom(Request $request)
     {
         $email = $request->email;
@@ -64,6 +66,7 @@ class OurController extends Controller
         }
         return response()->json(["success" => "false"]);
     }
+
     public function logIn(Request $request)
     {
         $email = $request->email;
@@ -83,9 +86,9 @@ class OurController extends Controller
         $jobs = Ad::all();
         $res = array();
         foreach ($jobs as $job) {
-            $job->experience=$job->experience()->get();
-            $job->requirements=$job->requirements()->get();
-            $job->company=$job->company()->get();
+            $job->experience = $job->experience()->get();
+            $job->requirements = $job->requirements()->get();
+            $job->company = $job->company()->get();
 //            $exp = $job->experience()->get();
 //            $asoc = $job;
 //            $asoc->company= $job->company()->get();
@@ -109,9 +112,9 @@ class OurController extends Controller
 
     public function getJobsFilter(Request $request)
     {
-        $query= DB::table('ad');
-        if(($request->has('sex'))) {
-            $query->where('sex','=',$request->sex);
+        $query = DB::table('ad');
+        if (($request->has('sex'))) {
+            $query->where('sex', '=', $request->sex);
         }
         $res = $query->get();
         return response()->json(['jobs' => $res]);
@@ -120,21 +123,21 @@ class OurController extends Controller
     public function getTagsByName(Request $request)
     {
         $name = $request->name;
-        $tags = Tag::where('name','LIKE','%'.$name.'%')->get();
+        $tags = Tag::where('name', 'LIKE', '%' . $name . '%')->get();
         return response()->json(['tags' => $tags->toArray()]);
 
     }
 
     public function getJobsForTag(Request $request)
     {
-       $tagIds = $request->tag_ids;
+        $tagIds = $request->tag_ids;
         $arr = explode(";", $tagIds);
         $res = array();
         foreach ($arr as $tagId) {
             $tagAds = TagAd::where('tag_id', '=', $tagId)->get();
             foreach ($tagAds as $tagAd) {
                 $ad = $tagAd->ad()->first();
-                if(!in_array($ad, $res)) {
+                if (!in_array($ad, $res)) {
                     array_push($res, $ad);
                 }
             }
@@ -143,25 +146,56 @@ class OurController extends Controller
         return response()->json(['jobs' => $res]);
     }
 
-    public function generatePdf()
+    public function generatePdf($id)
     {
-        $htmlString =  file_get_contents(storage_path("testHtml.html"),'r');
-        $htmlString = str_replace("%TEXT%", 'RADIII', $htmlString);
+        $ad = Ad::find($id);
+        $company = $ad->company()->first();
+        $htmlString = file_get_contents(storage_path("adHtml.html"), 'r');
+        $htmlString = str_replace("%OPIS%", $company->description, $htmlString);
+        $htmlString = str_replace("%ADRESA%", $company->address, $htmlString);
+        $htmlString = str_replace("%NASLOV%", $ad->title, $htmlString);
+        $htmlString = str_replace("%TELEFON%", $company->contact, $htmlString);
+        $reqs = $ad->requirements()->get();
+        $zahtevi = "";
+        foreach ($reqs as $req) {
+            $zahtevi = $zahtevi . ' <ul> <li>' . $req->text . '</li> </ul>';
+        }
+        $htmlString = str_replace("%ZAHTEVI%", $zahtevi, $htmlString);
+        $phoneNums = "";
+        for ($i = 0; $i < 12; $i++) {
+            $phoneNums = $phoneNums . ' <tr> <td>' . $company->contact . '</td> <hr> </tr>';
+        }
+        $htmlString = str_replace("%TELEFONI%", $phoneNums, $htmlString);
+
+        // CHart Type
+        $cht = "qr";
+// CHart Size
+        $chs = "100x100";
+// CHart Link
+// the url-encoded string you want to change into a QR code
+        $chl = urlencode("https://www.linkedin.com/in/otasevicm");
+// CHart Output Encoding (optional)
+// default: UTF-8
+        $choe = "UTF-8";
+        $qrcode = 'https://chart.googleapis.com/chart?cht=' . $cht . '&chs=' . $chs . '&chl=' . $chl . '&choe=' . $choe;
+        $htmlString = str_replace("%QRCODE%", $qrcode, $htmlString);
+
         $mpdf = new Mpdf();
         $mpdf->WriteHTML($htmlString);
-        $mpdf->Output('test.pdf', 'F');
+        $mpdf->Output('bandera.pdf', 'F');
 
         return response()->json(['jobs' => "jea"]);
     }
 
     public function getCompanyById($id)
-    {;
+    {
+        ;
         $com = Company::find($id);
         return response()->json(['company' => $com->toArray()]);
 
     }
 
-   public function cmpCompare($a, $b)
+    public function cmpCompare($a, $b)
     {
         if ($a['finalMatch'] == $b['finalMatch']) {
             return 0;
@@ -187,20 +221,20 @@ class OurController extends Controller
                     $wordsCount = sizeof($comArray);
                     foreach ($comArray as $comWord) {
                         foreach ($userAray as $userWord) {
-                            if(substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
+                            if (substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
                                 $wordsSame++;
                             }
                         }
                     }
-                    if((($wordsSame/$wordsCount)*100) >= 50) {
+                    if ((($wordsSame / $wordsCount) * 100) >= 50) {
                         $startDate = new DateTime($uExp->date_from);
-                        if($uExp->date_to != null) {
+                        if ($uExp->date_to != null) {
                             $endDate = new DateTime($uExp->date_to);
                         } else {
                             $endDate = new DateTime();
                         }
                         $yearDiff = $endDate->diff($startDate)->format('%y');
-                        if($yearDiff < $cExp->years) {
+                        if ($yearDiff < $cExp->years) {
                             $matchesExp = $matchesExp + 0.5;
                         } else {
                             $matchesExp++;
@@ -208,7 +242,7 @@ class OurController extends Controller
                     }
                 }
 
-                $user->pctmatchExp = ($matchesExp/sizeof($companyExp))*100;
+                $user->pctmatchExp = ($matchesExp / sizeof($companyExp)) * 100;
             }
 //endregion
 //region start of tagNum matches
@@ -217,12 +251,12 @@ class OurController extends Controller
             $adTags = $ad->tags()->get();
             foreach ($userTags as $userTag) {
                 foreach ($adTags as $adTag) {
-                    if($userTag->tag_id == $adTag->tag_id) {
+                    if ($userTag->tag_id == $adTag->tag_id) {
                         $numOfSameTags++;
                     }
                 }
             }
-            $user->pctOfSameTags = ($numOfSameTags/sizeof($adTags))*100;
+            $user->pctOfSameTags = ($numOfSameTags / sizeof($adTags)) * 100;
 //endregion
 //region start of education matches
 
@@ -237,17 +271,17 @@ class OurController extends Controller
                     $wordsCount = sizeof($comArray);
                     foreach ($comArray as $comWord) {
                         foreach ($userAray as $userWord) {
-                            if(substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
+                            if (substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
                                 $wordsSame++;
                             }
                         }
                     }
-                    if((($wordsSame/$wordsCount)*100) >= 50) {
+                    if ((($wordsSame / $wordsCount) * 100) >= 50) {
                         $numOfEduMatches++;
                     }
                 }
             }
-            $user->pctOfEduMatches = ($numOfEduMatches/sizeof($adReq))*100;
+            $user->pctOfEduMatches = ($numOfEduMatches / sizeof($adReq)) * 100;
 //endregion
 
 //region start of user skill matches
@@ -263,17 +297,17 @@ class OurController extends Controller
                     $wordsCount = sizeof($comArray);
                     foreach ($comArray as $comWord) {
                         foreach ($userAray as $userWord) {
-                            if(substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
+                            if (substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
                                 $wordsSame++;
                             }
                         }
                     }
-                    if((($wordsSame/$wordsCount)*100) >= 50) {
+                    if ((($wordsSame / $wordsCount) * 100) >= 50) {
                         $numOfSkilsMatched++;
                     }
                 }
             }
-            $user->pctOfSkilsMatched = ($numOfSkilsMatched/sizeof($adReq))*100;
+            $user->pctOfSkilsMatched = ($numOfSkilsMatched / sizeof($adReq)) * 100;
 //endregion
 //region start of final calculations
 
@@ -282,7 +316,7 @@ class OurController extends Controller
 //endregion
         }
         $arr = $users->toArray();
-        usort($arr ,array("App\\Http\\Controllers\\OurController", "cmpCompare"));
+        usort($arr, array("App\\Http\\Controllers\\OurController", "cmpCompare"));
         return response()->json(['users' => $arr]);
 
     }
@@ -301,7 +335,17 @@ class OurController extends Controller
 
     public function postAd(Request $request)
     {
-        $ad = new Ad($request->all());
+        $ad = new Ad();
+        $ad->company_id = $request->company_id;
+        $ad->data_from = $request->data_from;
+        $ad->date_to = $request->date_to;
+        $ad->sex = $request->sex;
+        $ad->age = $request->age;
+        $ad->pay = $request->pay;
+        $ad->title = $request->title;
+        $ad->duration = $request->duration;
+        $ad->what_we_offer = $request->what_we_offer;
+
         $ad->save();
         foreach ($request->experience as $exp) {
             $ex = new ExperienceCompany();
@@ -319,5 +363,168 @@ class OurController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function sendMail(Request $request)
+    {
+        $userId = $request->user_id;
+        $adId = $request->ad_id;
+        $user = User::find($userId);
+        $email = $user->email;
+        $mail = new PHPMailer;
 
+//$mail->SMTPDebug = 3;                               // Enable verbose debug output
+
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = 'marko.otasevic@mmklab.org';                 // SMTP username
+        $mail->Password = 'Marko1994';                           // SMTP password
+        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;                                    // TCP port to connect to
+
+        $mail->setFrom('office@poslic.com', 'Poslic');
+        $mail->addAddress($email, 'Marko Otasevic');     // Add a recipient          // Name is optional
+        $mail->addReplyTo('office@poslic.com', 'Poslic');
+        // Optional name
+        $mail->isHTML(true);                                  // Set email format to HTML
+
+        $ad = Ad::find($adId);
+        $company = $ad->company()->first();
+        $htmlBody = '<h4>Korisnik: ' . $company->name . ' zeli da vas kontaktira za posao: ' . $ad->title . '</h4>' . '.' . '<br> U koliko zelite da kontaktirate ovog korisnika to mozete uciniti na: ' . $company->contact;
+
+        $mail->Subject = 'Imate novi zahtev za posao';
+        $mail->Body = $htmlBody;
+        $mail->AltBody = 'Dobili ste novu ponudu za posao';
+
+        if (!$mail->send()) {
+            echo 'Message could not be sent.';
+            echo 'Mailer Error: ' . $mail->ErrorInfo;
+        } else {
+            echo 'Message has been sent';
+        }
+    }
+
+    public function getBestAdsForUser($id)
+    {
+        $match = 0;
+        $user = User::find($id);
+        $ads = Ad::all();
+        foreach ($ads as $ad) {
+//region start of exp match
+            $companyExp = $ad->experience()->get();
+            $userExp = $user->experrience()->get();
+            $matchesExp = 0;
+            foreach ($userExp as $uExp) {
+                foreach ($companyExp as $cExp) {
+                    $comArray = explode(" ", strtolower($cExp->position));
+                    $userAray = explode(" ", strtolower($uExp->position));
+                    $wordsSame = 0;
+                    $wordsCount = sizeof($comArray);
+                    foreach ($userAray as $userWord) {
+                        foreach ($comArray as $comWord) {
+                            if (substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
+                                $wordsSame++;
+                            }
+                        }
+                    }
+                    if ((($wordsSame / $wordsCount) * 100) >= 50) {
+                        $startDate = new DateTime($uExp->date_from);
+                        if ($uExp->date_to != null) {
+                            $endDate = new DateTime($uExp->date_to);
+                        } else {
+                            $endDate = new DateTime();
+                        }
+                        $yearDiff = $endDate->diff($startDate)->format('%y');
+                        if ($yearDiff < $cExp->years) {
+                            $matchesExp = $matchesExp + 0.5;
+                        } else {
+                            $matchesExp++;
+                        }
+                    }
+                }
+
+                $ad->pctmatchExp = ($matchesExp / sizeof($companyExp)) * 100;
+            }
+//endregion
+//region start of tagNum matches
+            $numOfSameTags = 0;
+            $userTags = $user->tags()->get();
+            $adTags = $ad->tags()->get();
+            foreach ($userTags as $userTag) {
+                foreach ($adTags as $adTag) {
+                    if ($userTag->tag_id == $adTag->tag_id) {
+                        $numOfSameTags++;
+                    }
+                }
+            }
+            $ad->pctOfSameTags = ($numOfSameTags / sizeof($adTags)) * 100;
+//endregion
+//region start of education matches
+
+            $userEdu = $user->education()->get();
+            $adReq = $ad->requirements()->get();
+            $numOfEduMatches = 0;
+            foreach ($userEdu as $edu) {
+                foreach ($adReq as $req) {
+                    $comArray = explode(" ", strtolower($req->text));
+                    $userAray = explode(" ", strtolower($edu->education_level));
+                    $wordsSame = 0;
+                    $wordsCount = sizeof($comArray);
+                    foreach ($userAray as $userWord) {
+                        foreach ($comArray as $comWord) {
+                            if (substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
+                                $wordsSame++;
+                            }
+                        }
+                    }
+                    if ((($wordsSame / $wordsCount) * 100) >= 50) {
+                        $numOfEduMatches++;
+                    }
+                }
+            }
+            if(sizeof($adReq) == 0) {
+                $ad->pctOfEduMatches = 1;
+            } else {
+                $ad->pctOfEduMatches = ($numOfEduMatches / sizeof($adReq)) * 100;
+            }
+//endregion
+
+//region start of user skill matches
+
+            $skills = $user->skills()->get();
+            $adReq = $ad->requirements()->get();
+            $numOfSkilsMatched = 0;
+            foreach ($skills as $skill) {
+                foreach ($adReq as $req) {
+                    $comArray = explode(" ", strtolower($req->text));
+                    $userAray = explode(" ", strtolower($skill->skill_name));
+                    $wordsSame = 0;
+                    $wordsCount = sizeof($comArray);
+                    foreach ($userAray as $userWord) {
+                        foreach ($comArray as $comWord) {
+                            if (substr(strtolower($comWord), 0, -3) == substr(strtolower($userWord), 0, -3)) {
+                                $wordsSame++;
+                            }
+                        }
+                    }
+                    if ((($wordsSame / $wordsCount) * 100) >= 50) {
+                        $numOfSkilsMatched++;
+                    }
+                }
+            }
+            if(sizeof($adReq) == 0) {
+                $ad->pctOfSkilsMatched = 1;
+            } else {
+                $ad->pctOfSkilsMatched = ($numOfSkilsMatched / sizeof($adReq)) * 100;
+            }
+//endregion
+//region start of final calculations
+
+            $finalMatch = ($user->pctOfSameTags * 0.4) + ($user->pctmatchExp * 0.3) + ($user->pctOfSkilsMatched * 0.2) + ($user->pctOfEduMatches * 0.1);
+            $ad->finalMatch = $finalMatch;
+//endregion
+        }
+        $arr = $ads->toArray();
+        usort($arr, array("App\\Http\\Controllers\\OurController", "cmpCompare"));
+        return response()->json(['jobs' => $arr]);
+    }
 }

@@ -29,7 +29,15 @@ $app->post('/jobs/tag','OurController@getJobsForTag');
 $app->get('/company/{id}','OurController@getCompanyById');
 $app->get('/job/bestUsers/{id}','OurController@getBestUsersForAd');
 $app->get('/job/basicInfo/{id}','OurController@getHomePageBasicInfo');
-$app->psot('/job/new','OurController@postAd');
+$app->post('/job/new','OurController@postAd');
+$app->get('/pdf/{id}','OurController@generatePdf');
+$app->post('/sendJobOffer','OurController@sendMail');
+$app->get('/user/getBestOffer/{id}','OurController@getBestAdsForUser');
+
+
+
+
+
 
 
 

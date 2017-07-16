@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 15, 2017 at 08:02 PM
+-- Generation Time: Jul 16, 2017 at 07:11 AM
 -- Server version: 5.7.14
 -- PHP Version: 5.6.25
 
@@ -34,7 +34,7 @@ CREATE TABLE `ad` (
   `sex` int(11) DEFAULT NULL,
   `age` int(11) DEFAULT NULL,
   `pay` int(11) DEFAULT NULL,
-  `title` int(11) DEFAULT NULL,
+  `title` varchar(200) DEFAULT NULL,
   `duration` varchar(200) DEFAULT NULL,
   `what_we_offer` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -44,7 +44,7 @@ CREATE TABLE `ad` (
 --
 
 INSERT INTO `ad` (`ad_id`, `company_id`, `date_from`, `date_to`, `sex`, `age`, `pay`, `title`, `duration`, `what_we_offer`) VALUES
-(1, 1, '2017-07-03', NULL, 1, 15, NULL, NULL, NULL, 'nudimo svasta nesto lepo'),
+(1, 1, '2017-07-03', NULL, 1, 15, NULL, 'Neki opis poslaaa', NULL, 'nudimo svasta nesto lepo'),
 (2, 1, '2017-07-01', '2017-07-04', 0, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -69,7 +69,7 @@ CREATE TABLE `company` (
 --
 
 INSERT INTO `company` (`company_id`, `email`, `password`, `name`, `address`, `logo_url`, `description`, `contact`) VALUES
-(1, 'com@radi.com', 'jeej', '', NULL, NULL, NULL, NULL);
+(1, 'com@radi.com', 'jeej', 'Belit', 'Trg Nikole Pasica 9', NULL, 'Druga najbolja IT firma na trgu nikole pasica', '064 548-58-96');
 
 -- --------------------------------------------------------
 
@@ -97,6 +97,14 @@ CREATE TABLE `education` (
   `education_level` varchar(100) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `education`
+--
+
+INSERT INTO `education` (`education_id`, `user_id`, `school`, `education_level`) VALUES
+(1, 1, 'Fon', 'mnogo zajeban'),
+(2, 1, 'ETF', 'neki zahtev znaci haos');
+
 -- --------------------------------------------------------
 
 --
@@ -109,6 +117,14 @@ CREATE TABLE `experience_company` (
   `years` int(11) NOT NULL,
   `position` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `experience_company`
+--
+
+INSERT INTO `experience_company` (`experience_company_id`, `ad_id`, `years`, `position`) VALUES
+(2, 1, 2, 'Hr covek'),
+(3, 2, 1, 'Zna sve covek');
 
 -- --------------------------------------------------------
 
@@ -123,8 +139,16 @@ CREATE TABLE `experience_user` (
   `company` varchar(200) NOT NULL,
   `date_from` date NOT NULL,
   `date_to` date DEFAULT NULL,
-  `description` varchar(300) NOT NULL
+  `description` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `experience_user`
+--
+
+INSERT INTO `experience_user` (`experience_user_id`, `user_id`, `position`, `company`, `date_from`, `date_to`, `description`) VALUES
+(1, 1, 'HR manager', 'Dulo', '2016-07-04', NULL, 'Ovo je opis pozicije'),
+(2, 1, 'PR covek', 'Pr comp', '2017-07-10', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -155,7 +179,7 @@ CREATE TABLE `requirements` (
 --
 
 INSERT INTO `requirements` (`requirements_id`, `ad_id`, `text`) VALUES
-(1, 1, 'ovo je neki zahtev');
+(2, 1, 'neki zahtev mnogo zajeban');
 
 -- --------------------------------------------------------
 
@@ -169,6 +193,14 @@ CREATE TABLE `skill` (
   `skill_name` varchar(200) NOT NULL,
   `skill_level` varchar(200) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `skill`
+--
+
+INSERT INTO `skill` (`skill_id`, `user_id`, `skill_name`, `skill_level`) VALUES
+(1, 1, 'neki zahtev mnogo ', 'idemoooo'),
+(2, 1, 'to je to mnogo neki', 'ma da da');
 
 -- --------------------------------------------------------
 
@@ -232,6 +264,14 @@ CREATE TABLE `tag_user` (
   `tag_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `tag_user`
+--
+
+INSERT INTO `tag_user` (`tag_id`, `user_id`) VALUES
+(1, 1),
+(2, 1);
 
 -- --------------------------------------------------------
 
@@ -374,17 +414,17 @@ ALTER TABLE `criteria`
 -- AUTO_INCREMENT for table `education`
 --
 ALTER TABLE `education`
-  MODIFY `education_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `education_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `experience_company`
 --
 ALTER TABLE `experience_company`
-  MODIFY `experience_company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `experience_company_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `experience_user`
 --
 ALTER TABLE `experience_user`
-  MODIFY `experience_user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `experience_user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `picture`
 --
@@ -394,12 +434,12 @@ ALTER TABLE `picture`
 -- AUTO_INCREMENT for table `requirements`
 --
 ALTER TABLE `requirements`
-  MODIFY `requirements_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `requirements_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `skill`
 --
 ALTER TABLE `skill`
-  MODIFY `skill_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `skill_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `tag`
 --
