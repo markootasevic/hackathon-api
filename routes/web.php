@@ -36,6 +36,8 @@ $app->get('/user/getBestOffer/{id}','OurController@getBestAdsForUser');
 $app->get('/company/images/{id}','OurController@getImagesForCompany');
 $app->get('/job/{id}','OurController@getJobById');
 $app->post('/job','OurController@postCompany');
+$app->get('/job/company/{id}','OurController@getJobForCompany');
+
 
 
 

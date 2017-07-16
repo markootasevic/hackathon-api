@@ -579,4 +579,11 @@ class OurController extends Controller
         }
         return response()->json(['success' => true]);
     }
+
+    public function getJobForCompany($id)
+    {
+        $com = Company::find($id);
+        $jobs = $com->ads()->get();
+        return response()->json(['jobs' => $jobs]);
+    }
 }
