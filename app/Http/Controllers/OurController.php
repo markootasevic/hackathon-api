@@ -551,7 +551,16 @@ class OurController extends Controller
         $com = new Company();
         $com->name = $request->name;
         $com->address = $request->address;
-        $logo = $request->file('logo');
-        $fileName=substr($file->getClientOriginalName(),0,strrpos($file->getClientOriginalName(),"."))."-".$id.".".$file->getClientOriginalExtension();
+        $com->description = $request->description;
+        $com->contact = $request->contact;
+        $com->save();
+        $tags = $request->tags;
+        foreach ($tags as $tag) {
+            $t = new Tag();
+            $t->tag_id = $tag->tag_id;
+            $t->company_id = $com->company_id;
+            $t->save();
+        }
+        return response()->json(['success' => true]);
     }
 }
