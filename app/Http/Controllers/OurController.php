@@ -9,6 +9,7 @@ use App\Jobs\Job;
 use App\Requirements;
 use App\Tag;
 use App\TagAd;
+use App\TagCompany;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -355,12 +356,19 @@ class OurController extends Controller
             $ex->ad_id = $ad->ad_id;
             $ex->save();
         }
-        foreach ($request->requirements as $req) {
+        $exps = explode(';',$request->requirements);
+        foreach ($exps as $req) {
             $r = new Requirements();
             $r->ad_id = $ad->ad_id;
-            $r->text = $req->text;
+            $r->text = $req;
             $r->save();
         }
+        $tagStr = $request->tag;
+        $tag = Tag::where('name','=',$tagStr)->first();
+        $tagCom = new TagCompany();
+        $tagCom->tag_id = $tag->tag_id;
+        $tagCom->company_id = $ad->company_id;
+        $tagCom->save();
         return response()->json(['success' => true]);
     }
 
