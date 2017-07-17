@@ -389,7 +389,7 @@ class OurController extends Controller
             $tagCom->company_id = $ad->company_id;
             $tagCom->save();
         }
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true,'ad'=>$ad->ad_id]);
     }
 
     public function sendMail(Request $request)
